@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center; /* Center content horizontally */
+            align-items: center; /* Center content vertically */
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            width: 80%;
+            max-width: 600px;
+            border: 1px solid #fff;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically within the container */
+        }
+        .chat-box {
+            height: 300px; /* Fixed height for the chat box */
+            overflow-y: auto;
+            border: 1px solid #fff;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #222;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        .chat-box p {
+            margin: 10px 0;
+        }
+        .user-query {
+            color: #0f0;
+        }
+        .bot-response {
+            color: #0af;
+            white-space: pre-wrap; /* Preserve formatting */
+        }
+        form {
+            display: flex;
+            width: 100%;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background-color: #444;
+            color: #fff;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #555;
+            color: #fff;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #666;
+        }
+        .footer {
+            width: 100%;
+            background-color: #000;
+            flex-grow: 1; /* Allow the footer to grow and fill the remaining space */
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+            <!-- Chat messages will appear here -->
+        </div>
+        <form id="query-form">
+            <input type="text" id="query" name="query" placeholder="Seek knowledge..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#query-form').on('submit', function(event) {
+                event.preventDefault();
+                var userQuery = $('#query').val();
+                console.log("User query: " + userQuery); // Log the user query
+                $('#chat-box').append('<p class="user-query">You: ' + userQuery + '</p>');
+                $('#query').val(''); // Clear the text box
+                $.ajax({
+                    url: '/get_response',
+                    type: 'POST',
+                    data: { query: userQuery }, // Pass the user query directly
+                    success: function(data) {
+                        var botResponse = data.response;
+                        $('#chat-box').append('<p class="bot-response">Bot: ' + botResponse + '</p>');
+                        $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
